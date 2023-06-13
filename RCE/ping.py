@@ -11,6 +11,7 @@ def check_rce_vulnerability(url):
         'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Mobile Safari/537.36'
     }
     # 发送请求，注入Payload，并检查响应中是否包含漏洞标识
+      #response = requests.get(url + payload, timeout=5)
     response = requests.post(url=url,data = data,headers =header )
     if 'vulnerable' in response.text:
         print('网站存在RCE漏洞')
