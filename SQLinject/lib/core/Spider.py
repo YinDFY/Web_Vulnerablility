@@ -1,5 +1,6 @@
 #!/usr/bin/env python
-#-*- coding:utf-8 -*-
+# -*- coding:utf-8 -*-
+
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
@@ -7,35 +8,33 @@ from SQLinject.lib.core import Download, sqlcheck, UrlManager
 import threading
 
 
-
-
 class SpiderMain(object):
-    def __init__(self,root,threadNum):
+    def __init__(self, root, threadNum):
         self.urls = UrlManager.UrlManager()
         self.download = Download.Downloader()
         self.root = root
         self.threadNum = threadNum
 
     def _judge(self, domain, url):
-        if (url.find(domain) != -1):
+        if url.find(domain) != -1:
             return True
         else:
             return False
 
-    def _parse(self,page_url,content):
+    def _parse(self, page_url, content):
         if content is None:
             return
         soup = BeautifulSoup(content, 'html.parser')
-        _news = self._get_new_urls(page_url,soup)
+        _news = self._get_new_urls(page_url, soup)
         return _news
 
-    def _get_new_urls(self, page_url,soup):
+    def _get_new_urls(self, page_url, soup):
         new_urls = set()
         links = soup.find_all('a')
         for link in links:
             new_url = link.get('href')
             new_full_url = urljoin(page_url, new_url)
-            if(self._judge(self.root,new_full_url)):
+            if self._judge(self.root, new_full_url):
                 new_urls.add(new_full_url)
         return new_urls
 
@@ -50,12 +49,12 @@ class SpiderMain(object):
                 new_url = self.urls.get_new_url()
                 ##sql check
                 try:
-                    if(sqlcheck.sqlcheck(new_url)):
-                        print("url:%s sqlcheck is valueable"%new_url)
+                    if sqlcheck.sqlcheck(new_url):
+                        print("url:%s sqlcheck is valuable" % new_url)
                 except:
                     pass
                 print("craw:" + new_url)
-                t = threading.Thread(target=self.download.download,args=(new_url,_content))
+                t = threading.Thread(target=self.download.download, args=(new_url, _content))
                 t.start()
                 th.append(t)
             for t in th:
@@ -63,5 +62,5 @@ class SpiderMain(object):
             for _str in _content:
                 if _str is None:
                     continue
-                new_urls = self._parse(new_url,_str["html"])
+                new_urls = self._parse(new_url, _str["html"])
                 self.urls.add_new_urls(new_urls)
