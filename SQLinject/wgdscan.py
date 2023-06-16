@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from SQLinject.lib.core.Spider import SpiderMain
+from lib.core.Spider import SpiderMain
 
 
 def main():
