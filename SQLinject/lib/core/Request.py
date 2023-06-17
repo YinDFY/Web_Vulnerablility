@@ -1,37 +1,27 @@
-import requests
 import bs4
+import re
+import requests
+
 from SQLinject.lib.core.Check import SQLCheck
 
 
 class request:
 
-
-    def getvaluename(url):
-        text1 = SQLCheck.returnselectname(url)
-        text2 = SQLCheck.returninputname(url)
-        text3 = SQLCheck.returntextareaname(url)
-
-        if text1 != 'not has':
-            print('select_name:'+SQLCheck.getname(text1))
-        else:
-            print('not has')
-
-        if text2 != 'not has':
-            print('input_name:'+SQLCheck.getname(text2))
-            print('input_value:'+SQLCheck.getvalue(text2))
-        else:
-            print('not has')
-
-        if text3 != 'not has':
-            print('textarea_name:'+SQLCheck.getname(text3))
-        else:
-            print('not has')
-
+    def getvalue(url):
+        re = ''
+        if SQLCheck.returnselect(url) != 'null':
+            re += SQLCheck.returnselect(url)
+        if SQLCheck.returninput(url) != 'null':
+            re += SQLCheck.returninput(url)
+        if SQLCheck.returntextarea(url) != 'null':
+            re += SQLCheck.returntextarea(url)
+        return re
 
     def setpost(url, payload):
         # post
         session = requests.Session()
         response = session.post(url, data=payload)
+        print(response.status_code)
         Soup = bs4.BeautifulSoup(response.text, 'lxml')
         return SQLCheck.hasError(Soup.text)
 
@@ -40,5 +30,40 @@ class request:
         url += payload
         session = requests.Session()
         response = session.get(url)
+        print(response.status_code)
         Soup = bs4.BeautifulSoup(response.text, 'lxml')
         return SQLCheck.hasError(Soup.text)
+
+    def setgetdata(url,payloads):
+        n = 1
+        payload = "?"
+        pattern = r'[^,]*,'
+        values = re.findall(pattern, request.getvalue(url))
+        tag = values.__len__()
+        while n <= tag / 2:
+            values[2 * n - 1] = values[2 * n - 1].replace(',', '')
+            values[2 * n - 2] = values[2 * n - 2].replace(',', '')
+            if n != 1:
+                payload += '&'
+            if values[2 * n - 1] == 'null':
+                payload += values[2 * n - 2] + '=' + payloads[2]
+            else:
+                payload += values[2 * n - 2] + '=' + values[2 * n - 1]
+            n += 1
+        return payload
+
+    def setpostdata(url,payloads):
+        n = 1
+        payload = {}
+        pattern = r'[^,]*,'
+        values = re.findall(pattern, request.getvalue(url))
+        tag = values.__len__()
+        while n <= tag / 2:
+            values[2 * n - 1] = values[2 * n - 1].replace(',', '')
+            values[2 * n - 2] = values[2 * n - 2].replace(',', '')
+            if values[2 * n - 1] == 'null':
+                payload[values[2 * n - 2]] = payloads[0]
+            else:
+                payload[values[2 * n - 2]] = values[2 * n - 1]
+            n += 1
+        return payload
