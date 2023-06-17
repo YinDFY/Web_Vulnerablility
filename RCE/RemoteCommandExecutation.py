@@ -11,10 +11,10 @@ def check_rce_vulnerability(url):
         'User-Agent': 'Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/111.0.0.0 Mobile Safari/537.36'
     }
     # 发送请求，注入Payload，并检查响应中是否包含漏洞标识
-      #response = requests.get(url + payload, timeout=5)
     response = requests.post(url=url,data = data,headers =header )
+    #response = requests.get(url + payload, timeout=5)
     if 'vulnerable' in response.text:
-        print('网站存在RCE漏洞')
+        print('网站存在Remote Command Executation 漏洞')
     else:
         print('网站安全')
 
@@ -23,4 +23,3 @@ target_url = 'http://192.168.1.192:8086/pikachu/vul/rce/rce_ping.php'
 
 # 调用函数进行漏洞检测
 check_rce_vulnerability(target_url)
-
