@@ -45,33 +45,40 @@ class Spider:
     '''
 
     def extended_spider(self):
-        self.content.append(self.fetch_page(self.url))
+        self.content.append(self.fetch_page())
         self.get_url()
         self.print_scanurl()
         if not self.unvisited.empty():
-            self.thread_subspider = Thread(target = self.subspider)
-            self.thread_subspider.start()
+            suburl = self.unvisited.get()
+            allurl = self.url + suburl
+            response = requests.get(allurl)
+            html_content = response.text
+            if html_content not in self.content:#页面去重
+                self.content.append(html_content)
+            soup = BeautifulSoup(html_content, "html.parser")
+            for link in soup.find_all("a"):
+                href = link.get("href")
+                if href not in self.links:
+                    self.links.append(href)
+                    self.unvisited.put(href)
 
-    def subspider(self,subu):
-        suburl = self.unvisited.get()
-        allurl = self.url+suburl
-        response = requests.get(allurl)
-        html_content = response.text
-        self.content.append(html_content)
-        soup = BeautifulSoup(html_content, "html.parser")
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            if href not in self.links:
-                self.links.append(href)
-                self.unvisited.put(href)
-                
+    def show_all_contenet(self):
+        i = 0
+        for html in self.content:
+            print("|-----------------------------------------------|")
+            print("id:",i)
+            print(html)
+            i = i+1
+            print("|-----------------------------------------------|")
+
 
 
 if __name__ == '__main__':
     # 使用示例
     url = 'http://192.168.1.192:8086/pikachu/'
     spider = Spider(url)
-    spider.fetch_page()
-    spider.get_url()
-    spider.print_scanurl()
+    spider.extended_spider()
+    spider.show_all_contenet()
+    #spider.get_url()
+    #spider.print_scanurl()
 
