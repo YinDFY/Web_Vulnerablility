@@ -49,12 +49,14 @@ class SpiderMain(object):
                     break
                 new_url = self.urls.get_new_url()
                 ##sql check
-                payloads = ["1' and 1 = 1 ", "kobe'+and+1%3D1+%23", "kobe'+and+1%3D2+%23", ]
+                payloads = ["1' and 1 = 1 ", "kobe'+and+1%3D1+%23", "kobe'+and+1%3D2+%23", "kobe'+and+sleep(3)%23", ]
 
                 if self.check.checkvul(new_url, payloads[0]):
-                    print("url:%s has a SQL vulnerability" % new_url)
+                    print("SQL inj vulnerability :%s" % new_url)
                 elif self.check.is_eq_(new_url, payloads[1], payloads[2]):
-                    print("url:%s has a SQL blinds vulnerability" % new_url)
+                    print("SQL bool blinds vulnerability :%s" % new_url)
+                elif self.check.is_time_inj(new_url, payloads[3]) >= 3 :
+                    print("SQL time blinds vulnerability :%s" % new_url)
 
                 # if sqlcheck.sqlcheck(new_url):
                 #     print("url:%s sqlcheck is valuable" % new_url)

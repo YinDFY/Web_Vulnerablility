@@ -78,6 +78,12 @@ class request:
         else:
             return True
 
+    def is_time_inj(self, url, payload):
+        url += self.setgetdata(url, payload)
+        session = requests.Session()
+        response = session.get(url)
+        return response.elapsed.seconds
+
     def checkvul(self, url, payload):
 
         if self.hasError(self.setpost(url, self.setpostdata(url, payload))):
