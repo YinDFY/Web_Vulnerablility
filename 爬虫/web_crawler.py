@@ -1,84 +1,43 @@
+'''
+爬取页面所有链接
+'''
 import requests
 from bs4 import BeautifulSoup
-import queue
-from threading import Thread
+from queue import Queue
 
-class Spider:
-    def __init__(self, url,spider_num = 1):#爬虫的构造函数输入是网页连接和爬虫的线程数量
-        self.url = url
-        self.unvisited = queue.Queue()
-        self.visited = queue.Queue()
-        self.spider = spider_num
-        self.links = []#存储无重复爬取的连接
-        self.content = []#存储页面源码
-    '''
-    收集本页面源代码--------------一级爬虫
-    '''
-    def fetch_page(self):#一级爬虫，爬取网页源码存储在self.html_content里
-        response = requests.get(self.url)
-        self.html_content = response.text
-        return response.content
-    def thisurl_content(self):
-        print(self.html_content)
-    '''
-    收集url并打印输出-------------二级爬虫
-    '''
-    def get_url(self):#抓取页面中包含的所有连接并存储在unbisted队列中
-        soup = BeautifulSoup(self.html_content, "html.parser")
-        for link in soup.find_all("a"):
-            href = link.get("href")
-            if href not in self.links:
-                self.links.append(href)
-        for item in self.links:
-            self.unvisited.put(item)
+def spider1_link(url):
+    links = []
+    response = requests.get(url)
+    html_content = response.text
+    soup = BeautifulSoup(html_content, "html.parser")
+    for link in soup.find_all("a"):
+        href = link.get("href")
+        if href not in links:
+            links.append(href)
+    return links
 
-    def print_scanurl(self):#将获取到的相关连接打印输出
-        self.thread_printurl = Thread(target= self.printurl)
-        self.thread_printurl.start()
+def spider1_content(url):
+    response = requests.get(url)
+    html_content = response.text
+    return html_content
 
-    def printurl(self):
-        for link in self.links:
-            print(url + link)
+def spider2_content(url):
+    unvisited = Queue()
+    links1 = spider1_link(url)
+    for link in links1:
+        unvisited.put(link)
+    while not unvisited.empty():
+        suburl = unvisited.get()
+        links2 = spider1_link(url+suburl)
+        for link in links2:
+            if link not in links1:
+                links1.append(link)
+                unvisited.put(link)
 
-    '''
-    三级爬虫，启用子线程，爬取本Web页面的所有内容
-    '''
-
-    def extended_spider(self):
-        self.content.append(self.fetch_page())
-        self.get_url()
-        self.print_scanurl()
-        if not self.unvisited.empty():
-            suburl = self.unvisited.get()
-            allurl = self.url + suburl
-            response = requests.get(allurl)
-            html_content = response.text
-            if html_content not in self.content:#页面去重
-                self.content.append(html_content)
-            soup = BeautifulSoup(html_content, "html.parser")
-            for link in soup.find_all("a"):
-                href = link.get("href")
-                if href not in self.links:
-                    self.links.append(href)
-                    self.unvisited.put(href)
-
-    def show_all_contenet(self):
-        i = 0
-        for html in self.content:
-            print("|-----------------------------------------------|")
-            print("id:",i)
-            print(html)
-            i = i+1
-            print("|-----------------------------------------------|")
-
+    unique_link = [x for i, x in enumerate(links1) if x not in links1[:i]]
+    for link in unique_link:
+        print(link)
 
 
 if __name__ == '__main__':
-    # 使用示例
-    url = 'http://192.168.1.192:8086/pikachu/'
-    spider = Spider(url)
-    spider.extended_spider()
-    spider.show_all_contenet()
-    #spider.get_url()
-    #spider.print_scanurl()
-
+    spider2_content("http://192.168.1.192:8086/pikachu/")
