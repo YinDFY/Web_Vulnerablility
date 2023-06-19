@@ -4,10 +4,13 @@ import requests
 
 class SQLCheck:
 
-    def getrequesttext(url):
+    def __init__(self):
+        pass
+
+    def getrequesttext(self, url):
         return requests.get(url).text
 
-    def getname(text):
+    def getname(self, text):
         pattern = r'name="([^"]+)"'
         ret = re.search(pattern, text)
         if ret:
@@ -18,7 +21,7 @@ class SQLCheck:
         else:
             return 'null'
 
-    def getvalue(text):
+    def getvalue(self, text):
         pattern = r'value="([^"]+)"'
         ret = re.search(pattern, text)
         if ret:
@@ -29,49 +32,42 @@ class SQLCheck:
         else:
             return 'null'
 
-    def returnselect(url):
+    def returnselect(self, url):
 
-        urltext = SQLCheck.getrequesttext(url)
+        urltext = self.getrequesttext(url)
         pattern = r'<select.*>'
         rets = re.findall(pattern, urltext)
         if rets:
             texts = ''
             for ret in rets:
-                texts += SQLCheck.getname(ret) + ',' + SQLCheck.getvalue(ret) + ','
+                texts += self.getname(ret) + ',' + self.getvalue(ret) + ','
             return texts
         else:
             return 'null'
 
-    def returninput(url):
+    def returninput(self, url):
 
-        urltext = SQLCheck.getrequesttext(url)
+        urltext = self.getrequesttext(url)
         pattern = r"<input[^>]*\/>"
         rets = re.findall(pattern, urltext)
         if rets:
             texts = ''
             for ret in rets:
-                texts += SQLCheck.getname(ret) + ',' + SQLCheck.getvalue(ret) + ','
+                texts += self.getname(ret) + ',' + self.getvalue(ret) + ','
             return texts
         else:
             return 'null'
 
-    def returntextarea(url):
+    def returntextarea(self, url):
 
-        urltext = SQLCheck.getrequesttext(url)
-        pattern = r'<textarea[^>]*\/>'
+        urltext = self.getrequesttext(url)
+        pattern = r'<textarea.*>'
         rets = re.findall(pattern, urltext)
         if rets:
             texts = ''
             for ret in rets:
-                texts += SQLCheck.getname(ret) + ',' + SQLCheck.getvalue(ret) + ','
+                texts += self.getname(ret) + ',' + self.getvalue(ret) + ','
             return texts
         else:
             return 'null'
 
-    def hasError(text):
-        pattern = r'You have an error in your SQL syntax'
-        ret = re.search(pattern, text)
-        if ret:
-            return True
-        else:
-            return False
