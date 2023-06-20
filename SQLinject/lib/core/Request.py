@@ -26,6 +26,7 @@ class request:
         response = session.post(url, data=payload)
         # print(response.status_code)
         Soup = bs4.BeautifulSoup(response.text, 'lxml')
+        # print(Soup.text.replace(" ", '').replace("\n", '').replace('\t', ''))
         return Soup.text
 
     def setget(self, url, payload):
@@ -34,6 +35,15 @@ class request:
         session = requests.Session()
         response = session.get(url)
         # print(response.status_code)
+        Soup = bs4.BeautifulSoup(response.text, 'lxml')
+        return Soup.text
+
+    def setheader(self, url, payload):
+        session = requests.Session()
+        header = {
+            'User-Agent': payload  # 自定义的User-Agent
+        }
+        response = session.get(url, headers=header)
         Soup = bs4.BeautifulSoup(response.text, 'lxml')
         return Soup.text
 
@@ -70,6 +80,7 @@ class request:
             else:
                 self_payload[values[2 * n - 2]] = values[2 * n - 1]
             n += 1
+        print(self_payload)
         return self_payload
 
     def is_eq_(self, url, payload1, payload2):
@@ -77,6 +88,12 @@ class request:
             return False
         else:
             return True
+
+    def is_time_inj(self, url, payload):
+        url += self.setgetdata(url, payload)
+        session = requests.Session()
+        response = session.get(url)
+        return response.elapsed.seconds
 
     def checkvul(self, url, payload):
 
