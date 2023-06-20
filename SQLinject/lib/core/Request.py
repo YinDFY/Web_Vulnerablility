@@ -80,7 +80,7 @@ class request:
             else:
                 self_payload[values[2 * n - 2]] = values[2 * n - 1]
             n += 1
-        print(self_payload)
+        # print(self_payload)
         return self_payload
 
     def is_eq_(self, url, payload1, payload2):
