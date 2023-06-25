@@ -14,8 +14,10 @@ def PHP_Dvul(url, payload):
     # 检查响应中是否存在反序列化漏洞的迹象
     if 'phpvul' in response.text:
         print("该网址存在 PHP 反序列化漏洞！")
+        return True
     else:
         print("该网址没有 PHP 反序列化漏洞。")
+        return False
 
 
 # 调用函数进行测试

