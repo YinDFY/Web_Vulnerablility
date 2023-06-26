@@ -9,7 +9,7 @@ def check_directory_traversal(url):
         response = requests.get(test_url)
         if response.status_code == 200:
             print(f"[Vulnerable] Directory Traversal found: {test_url}")
-            return True
+            return '目录遍历漏洞'
             break
         else:
             print(f"Not vulnerable: {test_url}")

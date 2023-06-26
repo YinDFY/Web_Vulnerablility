@@ -1,5 +1,5 @@
-from 文件上传和下载漏洞.download import poc_download
-from 文件上传和下载漏洞.upload import poc_upload
+from file_upanddown.download import poc_download
+from file_upanddown.upload import poc_upload
 
 def check_file_vulnerabilities(url):
     vulnerabilities_found = []

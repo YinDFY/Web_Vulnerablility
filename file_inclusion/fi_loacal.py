@@ -13,11 +13,12 @@ def detect_file_inclusion(url, file_param):
         response = requests.get(url, params=payload)
 
         if "root:" in response.text:
-            print(Fore.GREEN + f"[+] {url} 存在文件包含漏洞！")
+            return True
         else:
-            print(Fore.RED + f"[-] {url} 不存在文件包含漏洞")
+            return False
     except requests.exceptions.RequestException:
-        print(Fore.RED + f"[-] {url} 请求异常")
+        return False
+
 
 
 if __name__ == '__main__':

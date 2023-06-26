@@ -28,6 +28,7 @@ def is_same_origin(url1, url2):
     return parsed_url1.netloc == parsed_url2.netloc
 
 def spider2_content(url):
+    url_list=[]
     base_url = url
     unvisited = Queue()
     links1 = spider1_link(url)
@@ -46,7 +47,9 @@ def spider2_content(url):
     unique_link = [x for i, x in enumerate(links1) if x not in links1[:i]]
     for link in unique_link:
         absolute_link = urljoin(base_url, link)  # 构建绝对URL
-        print(absolute_link)
+        # print(absolute_link)
+        url_list.append(absolute_link)
+    return url_list
 
 
 if __name__ == '__main__':

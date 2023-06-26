@@ -4,7 +4,7 @@
 from urllib.parse import urljoin
 
 from bs4 import BeautifulSoup
-from SQLinject.lib.core import Download, sqlcheck, UrlManager,Request
+from SQLinject.lib.core import Download, sqlcheck, UrlManager, Request
 import threading
 
 
@@ -40,6 +40,7 @@ class SpiderMain(object):
         return new_urls
 
     def craw(self):
+        results = []
         self.urls.add_new_url(self.root)
         while self.urls.has_new_url():
             _content = []
@@ -48,15 +49,18 @@ class SpiderMain(object):
                 if self.urls.has_new_url() is False:
                     break
                 new_url = self.urls.get_new_url()
-                ##sql check
+                #sql check
                 payloads = ["1' and 1 = 1 ", "kobe'+and+1%3D1+%23", "kobe'+and+1%3D2+%23", "kobe'+and+sleep(3)%23", ]
 
                 if self.check.checkvul(new_url, payloads[0]):
-                    print("SQL inj vulnerability :%s" % new_url)
+                    print("time blinds :%s" % new_url)
+                    results.append([new_url, "SQL inject vulnerability"])
                 elif self.check.is_eq_(new_url, payloads[1], payloads[2]):
                     print("SQL bool blinds vulnerability :%s" % new_url)
-                elif self.check.is_time_inj(new_url, payloads[3]) >= 3 :
+                    results.append([new_url, "SQL bool blinds  vulnerability"])
+                elif self.check.is_time_inj(new_url, payloads[3]) >= 3:
                     print("SQL time blinds vulnerability :%s" % new_url)
+                    results.append([new_url, "SQL time blinds vulnerability"])
 
                 # if sqlcheck.sqlcheck(new_url):
                 #     print("url:%s sqlcheck is valuable" % new_url)
@@ -75,3 +79,5 @@ class SpiderMain(object):
                     continue
                 new_urls = self._parse(new_url, _str["html"])
                 self.urls.add_new_urls(new_urls)
+        # print(results)
+        return results

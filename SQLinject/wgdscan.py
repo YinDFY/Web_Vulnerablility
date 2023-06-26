@@ -1,11 +1,11 @@
 #!/usr/bin/env python
 # -*- coding:utf-8 -*-
 
-from lib.core.Spider import SpiderMain
+from SQLinject.lib.core.Spider import SpiderMain
 
 
-def main():
-    root = "http://192.168.249.131/pikachu/"
+def main(url):
+    root = url
     threadNum = 10
     # spider
     wgd = SpiderMain(root, threadNum)
@@ -13,4 +13,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main('http://192.168.1.192:8086/pikachu/')
