@@ -75,13 +75,10 @@ class SpiderMain(object):
                 payloads = ["1' and 1 = 1 ", "kobe'+and+1%3D1+%23", "kobe'+and+1%3D2+%23", "kobe'+and+sleep(3)%23", ]
 
                 if self.check.checkvul(new_url, payloads[0]):
-                    print("time blinds :%s" % new_url)
                     results.append([new_url, "SQL inject vulnerability"])
                 elif self.check.is_eq_(new_url, payloads[1], payloads[2]):
-                    print("SQL bool blinds vulnerability :%s" % new_url)
                     results.append([new_url, "SQL bool blinds  vulnerability"])
                 elif self.check.is_time_inj(new_url, payloads[3]) >= 3:
-                    print("SQL time blinds vulnerability :%s" % new_url)
                     results.append([new_url, "SQL time blinds vulnerability"])
 
                 # if sqlcheck.sqlcheck(new_url):
@@ -101,5 +98,5 @@ class SpiderMain(object):
                     continue
                 new_urls = self._parse(new_url, _str["html"])
                 self.urls.add_new_urls(new_urls)
-        # print(results)
         return results
+

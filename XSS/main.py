@@ -215,7 +215,7 @@ def check_xss_vulnerabilities(url):
         if check_xss_js(url):
             vulnerabilities_found.append('XSS JavaScript')
 
-    if vulnerabilities_found:
+    if len(vulnerabilities_found)!=0:
         return vulnerabilities_found[-1]  # 只返回最新检测出的漏洞，最多一个
     else:
         return None

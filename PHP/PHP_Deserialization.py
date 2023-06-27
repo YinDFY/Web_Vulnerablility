@@ -24,4 +24,4 @@ def PHP_Dvul(url):
 if __name__ == "__main__":
     url = 'http://192.168.249.131/pikachu/vul/unserilization/unser.php'
     # payload = 'O:1:"S":1:{s:4:"test";s:6:"phpvul";}'
-    PHP_Dvul(url, payload)
+    PHP_Dvul(url)

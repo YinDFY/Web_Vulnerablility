@@ -218,7 +218,7 @@ def check_csrf_vulnerabilities(url):
         vulnerabilities_found.append('CSRF POST')
     if check_csrf_token(url):
         vulnerabilities_found.append('CSRF Token')
-    if vulnerabilities_found:
+    if len(vulnerabilities_found)!=0:
         return vulnerabilities_found[-1]  # 只返回最新检测出的漏洞，最多一个
     else:
         return None
