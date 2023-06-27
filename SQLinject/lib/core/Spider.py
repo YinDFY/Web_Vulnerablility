@@ -39,6 +39,28 @@ class SpiderMain(object):
                 new_urls.add(new_full_url)
         return new_urls
 
+    def spider_s(self):
+        results = []
+        self.urls.add_new_url(self.root)
+        while self.urls.has_new_url():
+            _content = []
+            th = []
+            for i in list(range(self.threadNum)):
+                if self.urls.has_new_url() is False:
+                    break
+                new_url = self.urls.get_new_url()
+                print("craw:" + new_url)
+                t = threading.Thread(target=self.download.download, args=(new_url, _content))
+                t.start()
+                th.append(t)
+            for t in th:
+                t.join()
+            for _str in _content:
+                if _str is None:
+                    continue
+                new_urls = self._parse(new_url, _str["html"])
+                self.urls.add_new_urls(new_urls)
+
     def craw(self):
         results = []
         self.urls.add_new_url(self.root)
