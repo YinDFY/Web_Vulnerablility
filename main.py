@@ -7,8 +7,8 @@ from SQLinject.wgdscan import main
 from XSS.main import check_xss_vulnerabilities
 from dir_list.dir_list import check_directory_traversal
 from file_upanddown.main import check_file_vulnerabilities
-from reptile.web_crawler import spider2_content
-
+from reptile.web_crawler import spider1_link
+from threading import Thread
 
 #合并列表
 def merge_results(list1, list2):
@@ -26,7 +26,7 @@ def merge_results(list1, list2):
 
 def run_detection(url):
     results = []
-    urls = spider2_content(url)
+    urls = spider1_link(url)
     for url in urls:
         result_str = ""
 
@@ -34,44 +34,53 @@ def run_detection(url):
         burtforce_result = check_burtforce(url)
         if burtforce_result:
             result_str += "暴力破解漏洞:" + burtforce_result
+            print(result_str)
 
         # 检测CSRF漏洞
         csrf_result = check_csrf_vulnerabilities(url)
         if csrf_result:
             result_str += "CSRF漏洞:" + csrf_result
+            print(result_str)
 
         # 检测文件包含漏洞
         file_inclusion_result = check_file_inclusion(url)
         if file_inclusion_result:
             result_str += "文件包含漏洞:" + file_inclusion_result
+            print(result_str)
 
         # 检测PHP反序列化漏洞
         php_deserialization_result = PHP_Dvul(url)
         if php_deserialization_result:
             result_str += "PHP反序列化漏洞:" + php_deserialization_result
+            print(result_str)
 
         # 检测远程代码执行漏洞
         rce_result = check_rce_vulnerabilities(url)
         if rce_result:
             result_str += "远程代码执行漏洞:" + rce_result
+            print(result_str)
 
 
         # 检测XSS漏洞
         xss_result = check_xss_vulnerabilities(url)
         if xss_result:
             result_str += "XSS漏洞:" + xss_result
+            print(result_str)
 
         # 检测目录遍历漏洞
         directory_traversal_result = check_directory_traversal(url)
         if directory_traversal_result:
             result_str += "目录遍历漏洞:" + directory_traversal_result
+            print(result_str)
 
         # 检测文件上传和下载漏洞
         file_vulnerabilities_result = check_file_vulnerabilities(url)
         if file_vulnerabilities_result:
             result_str += "文件上传和下载漏洞:" + file_vulnerabilities_result
+            print(result_str)
         if result_str:
             results.append([url, result_str.strip()])
+            print([url, result_str])
     results_other = main(url)
     results = merge_results(results, results_other)
     return results
@@ -79,7 +88,7 @@ def run_detection(url):
 
 def perform_xss_scan(url):
     results = []
-    urls = spider2_content(url)
+    urls = spider1_link(url)
     for url in urls:
         result_str = ""
 
@@ -96,7 +105,7 @@ def perform_xss_scan(url):
 
 def perform_brute_force_scan(url):
     results = []
-    urls = spider2_content(url)
+    urls = spider1_link(url)
     for url in urls:
         result_str = ""
 
@@ -113,7 +122,7 @@ def perform_brute_force_scan(url):
 
 def perform_remote_code_execution_scan(url):
     results = []
-    urls = spider2_content(url)
+    urls = spider1_link(url)
     for url in urls:
         result_str = ""
 
@@ -130,7 +139,7 @@ def perform_remote_code_execution_scan(url):
 
 def perform_file_vulnerability_scan(url):
     results = []
-    urls = spider2_content(url)
+    urls = spider1_link(url)
     for url in urls:
         result_str = ""
 
@@ -168,6 +177,10 @@ def scan_choose(url, scan_mode):
         return "无效的扫描模式"
 
 
+def write_list_to_file(file_path, data_list):
+    with open(file_path, 'w') as file:
+        for item in data_list:
+            file.write(str(item) + '\n')
 
 
 if __name__ == '__main__':
@@ -176,3 +189,10 @@ if __name__ == '__main__':
 
     result = scan_choose(url, scan_mode)
     print(result)
+    result_str1 = ['http://192.168.1.192:8086/pikachu/xss_stored.php?id=3834', '暴力破解漏洞:表单暴力破解漏洞文件包含漏洞:远程文件包含漏洞']
+    # result_str2 = ['http://192.168.1.192:8086/pikachu/xss_stored.php?id=3830', '暴力破解漏洞:表单暴力破解漏洞文件包含漏洞:远程文件包含漏洞']
+    # result = []
+    # result.append(result_str1)
+    # result.append(result_str2)
+    write_list_to_file('result.txt', result)
+

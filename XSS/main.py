@@ -29,12 +29,15 @@ def getParameter(url, data):
     # 查找所有的表单
     forms = soup.find_all("form")
 
+    # 定义空列表
+    name = []
+    value_t = []
+
     # 遍历每个表单，获取参数
     for form in forms:
         # 查找表单中的所有输入元素
         inputs = form.find_all("input")
-        name = []
-        value_t = []
+
         # 打印表单参数及其值
         for input in inputs:
             # 获取输入元素的 name 属性值
@@ -44,18 +47,18 @@ def getParameter(url, data):
                 value = input.get("value")
                 if value is None:
                     value = data
-                print("表单参数:", param)
-                print("参数值:", value)
                 name.append(param)
                 value_t.append(value)
+
+    # 返回列表
     return name, value_t
 
 def checkResponseForString(response, data):
     if data in response.text:
-        print("字符串 '{}' 存在于响应中".format(data))
+        # print("字符串 '{}' 存在于响应中".format(data))
         return True
     else:
-        print("字符串 '{}' 不存在于响应中".format(data))
+        # print("字符串 '{}' 不存在于响应中".format(data))
         return False
 
 def check_xss_get_reflected(url):
@@ -68,7 +71,7 @@ def check_xss_get_reflected(url):
         payload[name[i]] = value_t[i]
 
     # 打印payload
-    print("Payload:", payload)
+    # print("Payload:", payload)
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
@@ -137,7 +140,7 @@ def check_xss_filterate(url):
         payload[name[i]] = value_t[i]
 
     # 打印payload
-    print("Payload:", payload)
+    # print("Payload:", payload)
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
@@ -153,7 +156,7 @@ def check_xss_htmlspecialchars(url):
         payload[name[i]] = value_t[i]
 
     # 打印payload
-    print("Payload:", payload)
+    # print("Payload:", payload)
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
@@ -169,7 +172,7 @@ def check_xss_href(url):
         payload[name[i]] = value_t[i]
 
     # 打印payload
-    print("Payload:", payload)
+    # print("Payload:", payload)
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
@@ -185,7 +188,7 @@ def check_xss_js(url):
         payload[name[i]] = value_t[i]
 
     # 打印payload
-    print("Payload:", payload)
+    # print("Payload:", payload)
     # 构建payload并发送GET请求
     response = build_payloads_get(url, payload)
 
@@ -212,7 +215,10 @@ def check_xss_vulnerabilities(url):
         if check_xss_js(url):
             vulnerabilities_found.append('XSS JavaScript')
 
-    return vulnerabilities_found[:1]  # 只返回最新检测出的漏洞，最多一个
+    if vulnerabilities_found:
+        return vulnerabilities_found[-1]  # 只返回最新检测出的漏洞，最多一个
+    else:
+        return None
 
 
 

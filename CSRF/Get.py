@@ -218,8 +218,10 @@ def check_csrf_vulnerabilities(url):
         vulnerabilities_found.append('CSRF POST')
     if check_csrf_token(url):
         vulnerabilities_found.append('CSRF Token')
-
-    return vulnerabilities_found[:1]  # 只返回最新检测出的漏洞，最多一个
+    if vulnerabilities_found:
+        return vulnerabilities_found[-1]  # 只返回最新检测出的漏洞，最多一个
+    else:
+        return None
 
 if __name__ == '__main__':
     # print(check_csrf_get('http://192.168.1.192:8086/pikachu/vul/csrf/csrfget/csrf_get_login.php'))
